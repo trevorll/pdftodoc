@@ -16,9 +16,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    pdf = '/home/godwill/sd/receipt.pdf'
-    docx = '/home/godwill/Documents/output1.docx'
-    direct = '/home/godwill/Documents/receipt'
+    pdf = 'path/to/pdf'
+    docx = 'path/to/output/storage.docx'
+    direct = 'path/to/documnts folder'
     cv = Converter(pdf)
     cv.convert(docx,start=0, end=None)
     
@@ -39,7 +39,7 @@ def home():
         doc.add_paragraph(text)    # Add the text to the Word document
 
     # Save the Word document
-    doc.save('/home/godwill/Documents/out.docx')
+    doc.save('path/to/output/folder')
 
     # Close the PDF file
     pdf_file.close()
@@ -51,11 +51,11 @@ def home():
 
 @app.route('/rmbg')
 def rmbg():
-    inputImage = Image.open('/home/godwill/Downloads/unnamed.jpg')
+    inputImage = Image.open('path/to/image')
     inputArray = np.array(inputImage)
     outputArray = remove(inputArray)
     outputImage = Image.fromarray(outputArray)
-    outputImage.save('/home/godwill/Downloads/output.png')
+    outputImage.save('/path/to/output')
     return 'success'
     
 if __name__ == '__main__':

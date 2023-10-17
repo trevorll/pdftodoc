@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>resize</title>
+</head>
+
+<body>
+    <form method="post" enctype="multipart/form-data">
+        <label for="len"> len</label>
+        <input type="text" name="len" id="len" />
+        <label for="width"> width</label>
+        <input type="text" name="width" id="width">
+        <label for="file">file</label>
+        <input type="file" name="image" id="file">
+        <button onclick="uploadFile()">submit</button>
+
+    </form>
+
+    <div>
+        <img src="" id="img">
+    </div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function uploadFile() {
+
+        var blobFile = $('#file').files[0];
+        var formData = new FormData();
+        formData.append("fileToUpload", blobFile);
+
+        $.ajax({
+            url: "/rmbg",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function(response) {
+                $('#img').src = response
+
+            },
+            error: function(jqXHR, textStatus, errorMessage) {
+                console.log(errorMessage); // Optional
+            }
+
+        }).then(function(response) {
+            $('#img').src = response
+        });
+        return false
+    }
+</script>
+
+</html>

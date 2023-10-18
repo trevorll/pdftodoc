@@ -3,10 +3,11 @@ from pdf2docx import Converter
 from rembg import remove
 import numpy as np
 from PIL import Image
-from docx import Document
 
-import PyPDF2, os
-from docx import Document
+from spire.pdf.common import *
+from spire.pdf import *
+import  os
+
 
 
 
@@ -20,37 +21,69 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def home():
-    pdf = '/home/godwill/sd/receipt.pdf'
-    docx = '/home/godwill/Documents/output1.docx'
-    direct = '/home/godwill/Documents/receipt'
-    cv = Converter(pdf)
-    cv.convert(docx,start=0, end=None)
-    
+    return render_template('home.html')
 
-    # Open the PDF file
-    pdf_file = open(pdf, 'rb')
 
-    # Create a PDF reader object
-    pdf_reader = PyPDF2.PdfReader(pdf_file)
+@app.route('/pdftodocx',methods=['GET','POST'])
+def pdftodocx():
+    if request.method=='POST':
+        file = request.files['pdf']
+        file.save(os.path.join( app.config['UPLOAD_FOLDER'], file.filename))
+        pd = UPLOAD_FOLDER+file.filename
+        filename = file.filename.split('.')[0]+'.docx'
 
-    # Create a new Word document
-    doc = Document()
+        pdf = PdfDocument()
+        # Load a PDF file
+        pdf.LoadFromFile(pd)
 
-    # Iterate through each page of the PDF
-    for page_num in range(len(pdf_reader.pages)):
-        page = pdf_reader.pages[page_num]
-        text = page.extract_text()  # Extract text from the PDF page
-        doc.add_paragraph(text)    # Add the text to the Word document
+        # Convert the PDF file to a Word DOCX file
+        pdf.SaveToFile(os.path.join( app.config['UPLOAD_FOLDER'], filename), FileFormat.DOCX)
+        # Close the PdfDocument object
+        pdf.Close()
 
-    # Save the Word document
-    doc.save('/home/godwill/Documents/out.docx')
 
-    # Close the PDF file
-    pdf_file.close()
+        
+        print('successful')
+        return """<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+        </head>
+        <body>
+            
+            <button id="downloadImage">download</button>
+        </body>
+        <script>
+        const btn = document.getElementById('downloadImage');
+        const url = "/static/public/%s";
 
-    cv.close()
-    print('successfull')
-    return('hello')
+        btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        downloadImage(url);
+        })
+
+
+        function downloadImage(url) {
+        fetch(url, {
+            mode : 'no-cors',
+        })
+            .then(response => response.blob())
+            .then(blob => {
+            let blobUrl = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.download = url;
+            a.href = blobUrl;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        }
+
+        </script>
+        </html>"""%(filename)
+    return render_template('pdf.html')
 
 
 @app.route('/rmbg',methods = ['GET', 'POST'])
@@ -110,11 +143,11 @@ def rmbg():
 
 
 @app.route('/resizeimage', methods=['GET','POST'])
-def reizeimage():
+def resizeimage():
     if request.method == 'POST':
         file = request.files['image']
         image = Image.open(file)
-        newImage = image.resize((288, 288))
+        newImage = image.resize((int(request.form['len']), int(request.form['width'])))
         filename = file.filename
         newImage.save(os.path.join( app.config['UPLOAD_FOLDER'], filename))
         return """<!DOCTYPE html>

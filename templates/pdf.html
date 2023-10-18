@@ -9,36 +9,35 @@
 
 <body>
     <form method="post" enctype="multipart/form-data">
-        <label for="len"> len</label>
-        <input type="text" value="250" name="len" id="len" />
-        <label for="width"> width</label>
-        <input type="text" value="250" name="width" id="width">
-        <label for="file">file</label>
-        <input type="file" name="image" id="file">
+
+        <label for="pdf">file</label>
+        <input type="file" name="pdf" id="pdf">
         <button onclick="uploadFile()">submit</button>
 
     </form>
 
-
+    <div>
+        <img src="" id="img">
+    </div>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     function uploadFile() {
 
-        var blobFile = $('#file').files[0];
+        var blobFile = $('#pdf').files[0];
         var formData = new FormData();
         formData.append("fileToUpload", blobFile);
 
         $.ajax({
-            url: "/resizeimage",
+            url: "/home",
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
 
             success: function(response) {
-                $('#img').src = response
+
 
             },
             error: function(jqXHR, textStatus, errorMessage) {
@@ -46,7 +45,7 @@
             }
 
         }).then(function(response) {
-            $('#img').src = response
+
         });
         return false
     }

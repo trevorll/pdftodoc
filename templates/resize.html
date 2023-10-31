@@ -8,14 +8,14 @@
 </head>
 
 <body>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" accept="image/*" enctype="multipart/form-data">
         <label for="len"> len</label>
         <input type="text" value="250" name="len" id="len" />
         <label for="width"> width</label>
         <input type="text" value="250" name="width" id="width">
         <label for="file">file</label>
         <input type="file" name="image" id="file">
-        <button onclick="uploadFile()">submit</button>
+        <button type="submit" onclick="uploadFile()">submit</button>
 
     </form>
 
@@ -25,30 +25,33 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     function uploadFile() {
+        $(document).on('submit', 'form', function(e) {
 
-        var blobFile = $('#file').files[0];
-        var formData = new FormData();
-        formData.append("fileToUpload", blobFile);
+            var blobFile = $('#file').files[0];
+            var formData = new FormData();
+            formData.append("fileToUpload", blobFile);
 
-        $.ajax({
-            url: "/resizeimage",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
+            $.ajax({
+                url: "/resizeimage",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
 
-            success: function(response) {
+                success: function(response) {
+                    e.preventDefault()
+
+                    $('#img').src = response
+
+                },
+                error: function(jqXHR, textStatus, errorMessage) {
+                    console.log(errorMessage); // Optional
+                }
+            }).then(function(response) {
                 $('#img').src = response
-
-            },
-            error: function(jqXHR, textStatus, errorMessage) {
-                console.log(errorMessage); // Optional
-            }
-
-        }).then(function(response) {
-            $('#img').src = response
-        });
-        return false
+            });
+            return false
+        })
     }
 </script>
 

@@ -4,8 +4,8 @@ from rembg import remove
 import numpy as np
 from PIL import Image
 
-from spire.pdf.common import *
-from spire.pdf import *
+
+from spire.pdf import PdfDocument,FileFormat
 import  os
 
 
